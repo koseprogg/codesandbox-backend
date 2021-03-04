@@ -1,9 +1,18 @@
 {
+  "scripts": {
+    "runServer": "nodemon backend/vmServer.js",
+    "start": "nodemon backend/vmServer.js"
+  },
   "dependencies": {
     "axios": "^0.21.1",
+<<<<<<< HEAD
     "body-parser": "^1.19.0",
+=======
+>>>>>>> 0e38c38 (Add cors)
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "sandbox": "^0.8.6"
+    "nodemon": "^2.0.7",
+    "sandbox": "^0.8.6",
+    "vm2": "^3.9.2"
   }
 }
