@@ -1,8 +1,9 @@
 const {VM} = require('vm2');
 const vm = require('vm');
+const cors = require('cors');
+
 
 const express = require("express");
-var bodyParser = require('body-parser');
 
 const app = express();
 const port = 3000;
@@ -15,14 +16,14 @@ app.use(
 );
 
 app.use(express.json());
+app.use(cors());
 
 app.post('/', (req, res) => {
     const code = req.body.code;
-    
     const context = vm.createContext();
     const result = vm.runInContext(code, context);
 
-    res.status(200).send({
+    res.status(201).send({
         result: result,
         msg: result
     });
