@@ -6,6 +6,7 @@ const CompetitionSchema = new Schema({
   _id: mongoose.Schema.Types.ObjectId,
   name: String,
   activeFrom: Date,
+  image: String,
   activeTo: Date,
   tasks: [{type: mongoose.Schema.Types.ObjectId, ref: 'tasks'}]
 }, {

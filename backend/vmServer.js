@@ -24,7 +24,7 @@ app.post('/', (req, res) => {
     const result = vm.runInContext(code, context);
 
     res.status(201).send({
-        result: result,
+        result: {oppgave1: result, oppgave2: "wrong"},
         msg: result
     });
 })
