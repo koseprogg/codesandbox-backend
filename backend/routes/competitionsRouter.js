@@ -54,22 +54,44 @@ router.post('/nuts/:competition/:nut', async (req, res) => {
   console.log('FIRE');
   const { code } = req.body;
   const task = await runTaskCode(req, res);
-  const { context, prependedCode, appendedCode } = task;
+  const {
+    context, testCases, prependedCode, appendedCode,
+  } = task;
 
   const vm = new VM();
 
   let stacktrace = '';
-  let result = null;
+  let results = null;
   try {
     vm.run(prependedCode);
-    result = vm.run(code);
+    vm.run(code);
     vm.run(appendedCode);
+
+    results = testCases.map((testCase) => {
+      const testResult = vm.run(testCase.testCode);
+
+      if (testResult === testCase.correctAnswer) {
+        return ({
+          testDescription: testCase.testDescription,
+          achievedWeight: testCase.weight,
+          success: true,
+          yourOutput: JSON.stringify(testResult),
+        });
+      }
+      return ({
+        testDescription: testCase.testDescription,
+        achievedWeight: 0,
+        success: false,
+        yourOutput: JSON.stringify(testResult),
+      });
+    });
   } catch (e) {
     stacktrace = e;
+    console.log(e);
   }
 
   res.status(200).send({
-    result: `RES: ${result} ----- msg: ${stacktrace.toString()}`,
+    result: results,
     msg: stacktrace.toString(),
   });
 });

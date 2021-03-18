@@ -11,6 +11,8 @@ const TaskSchema = new Schema({
   testCases: [{
     testCode: String,
     weight: Number,
+    correctAnswer: String,
+    testDescription: String,
   }],
   prize: String,
   codeContext: [{

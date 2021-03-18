@@ -17,4 +17,9 @@ const normalizeString = (stringToNormalize) => {
   return normalizedString;
 };
 
+const runTestCase = (testCase, vm) => {
+  const x = 2;
+  return x;
+};
+
 export { normalizeString };

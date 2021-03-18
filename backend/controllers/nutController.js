@@ -13,7 +13,7 @@ const runTaskCode = async (req, res) => {
       day: nut,
       parentCompetition: ObjectId(comp._id),
     },
-  ).select('prependedCode appendedCode codeContext');
+  ).select('prependedCode appendedCode codeContext testCases');
   return foundTask;
 };
 
