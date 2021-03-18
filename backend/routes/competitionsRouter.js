@@ -19,8 +19,8 @@ router.get('/', (req, res) => {
 router.get('/:name', (req, res) => {
   const { name } = req.params;
 
-  CompetitionModel.find({ nameNormalized: normalizeString(name) })
-    .select('name, activeFrom activeTo image tasks')
+  CompetitionModel.findOne({ nameNormalized: normalizeString(name) })
+    .select('name isActive image tasks')
     .populate('tasks', 'name description image prize')
     .then((tasks) => res.json(tasks))
     .catch(() => res.status(400).send('Something went wrong.'));
@@ -30,7 +30,7 @@ router.get('/:name/', (req, res) => {
   const { name } = req.params;
 
   CompetitionModel.find({ nameNormalized: normalizeString(name) })
-    .select('name, tasks')
+    .select('name tasks')
     .populate('tasks', 'name description image prize')
     .sort('-day')
     .then((tasks) => res.json(tasks))
@@ -41,7 +41,7 @@ router.get('/:name/day/:day', (req, res) => {
   const { day, name } = req.params;
 
   CompetitionModel.find({ nameNormalized: normalizeString(name) })
-    .select('name, tasks')
+    .select('name tasks')
     .populate({
       path: 'tasks',
       match: { day: parseInt(day, 10) },
