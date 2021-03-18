@@ -3,6 +3,7 @@ import { VM } from 'vm2';
 import CompetitionModel from '../models/competitionModel.js';
 import TaskModel from '../models/taskModel.js';
 import { runTaskCode } from '../controllers/nutController.js';
+import { normalizeString } from '../utils/utils.js';
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ router.get('/', (req, res) => {
 router.get('/:name', (req, res) => {
   const { name } = req.params;
 
-  CompetitionModel.find({ nameNormalized: name })
+  CompetitionModel.find({ nameNormalized: normalizeString(name) })
     .select('name, activeFrom activeTo image tasks')
     .populate('tasks', 'name description image prize')
     .then((tasks) => res.json(tasks))
@@ -28,7 +29,7 @@ router.get('/:name', (req, res) => {
 router.get('/:name/', (req, res) => {
   const { name } = req.params;
 
-  CompetitionModel.find({ nameNormalized: name })
+  CompetitionModel.find({ nameNormalized: normalizeString(name) })
     .select('name, tasks')
     .populate('tasks', 'name description image prize')
     .sort('-day')
@@ -39,7 +40,7 @@ router.get('/:name/', (req, res) => {
 router.get('/:name/day/:day', (req, res) => {
   const { day, name } = req.params;
 
-  CompetitionModel.find({ nameNormalized: name })
+  CompetitionModel.find({ nameNormalized: normalizeString(name) })
     .select('name, tasks')
     .populate({
       path: 'tasks',
