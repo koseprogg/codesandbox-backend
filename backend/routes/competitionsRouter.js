@@ -21,7 +21,7 @@ router.get('/:name', (req, res) => {
 
   CompetitionModel.findOne({ nameNormalized: normalizeString(name) })
     .select('name isActive image tasks')
-    .populate('tasks', 'name description image prize')
+    .populate('tasks', 'name day description subtasks image prize')
     .then((tasks) => res.json(tasks))
     .catch(() => res.status(400).send('Something went wrong.'));
 });
