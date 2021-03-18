@@ -1,21 +1,28 @@
 import mongoose from 'mongoose';
 
-const {Schema, model} = mongoose;
+const { Schema, model } = mongoose;
 
 const TaskSchema = new Schema({
   _id: mongoose.Schema.Types.ObjectId,
   day: Number,
   name: String,
   description: String,
-  subtasks: [String], 
+  subtasks: [String],
+  testCases: [{
+    testCode: String,
+    weight: Number,
+  }],
   prize: String,
-  codeContext: String,
+  codeContext: [{
+    key: String,
+    value: String,
+  }],
   image: String,
   prependedCode: String,
   appendedCode: String,
-  parentCompetition: {type: mongoose.Schema.Types.ObjectId, ref: 'competitions'}
+  parentCompetition: { type: mongoose.Schema.Types.ObjectId, ref: 'competitions' },
 }, {
-  collection: 'tasks'
+  collection: 'tasks',
 });
 
 const TaskModel = model('tasks', TaskSchema);
