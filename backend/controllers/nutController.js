@@ -5,12 +5,12 @@ import { normalizeString } from '../utils/utils.js';
 
 const { ObjectId } = mongoose.Types;
 
-const runTaskCode = async (req, res) => {
-  const { competition, nut } = req.params;
-  const comp = await CompetitionModel.findOne({ nameNormalized: normalizeString(competition) });
+const runTaskCode = async (req) => {
+  const { name, day } = req.params;
+  const comp = await CompetitionModel.findOne({ nameNormalized: normalizeString(name) });
   const foundTask = await TaskModel.findOne(
     {
-      day: nut,
+      day,
       parentCompetition: ObjectId(comp._id),
     },
   ).select('prependedCode appendedCode codeContext testCases');

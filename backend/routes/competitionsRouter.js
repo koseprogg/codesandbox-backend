@@ -45,16 +45,16 @@ router.get('/:name/day/:day', (req, res) => {
     .populate({
       path: 'tasks',
       match: { day: parseInt(day, 10) },
-      select: 'name description image prize subtasks',
+      select: 'name day description subtasks image prize',
     })
     .then((tasks) => res.json(tasks))
     .catch(() => res.status(400).send('Something went wrong.'));
 });
+// .populate('tasks', 'name day description subtasks image prize')
 
-router.post('/nuts/:competition/:nut', async (req, res) => {
-  console.log('FIRE');
+router.post('/:name/day/:day', async (req, res) => {
   const { code } = req.body;
-  const task = await runTaskCode(req, res);
+  const task = await runTaskCode(req);
   const {
     context, testCases, prependedCode, appendedCode,
   } = task;
