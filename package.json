@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "runServer": "nodemon backend/server.js",
+    "runServer": "node backend/server.js",
     "start": "nodemon backend/server.js",
     "lint": "eslint --ext js --ext ts backend",
     "lint:fix": "eslint --fix --ext js --ext ts backend"
