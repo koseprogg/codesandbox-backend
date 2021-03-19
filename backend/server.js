@@ -58,5 +58,6 @@ app.post('/script', (req, res) => {
 });
 
 app.listen(port, () => {
+  console.log(process.env);
   console.log(`backend listening at http://localhost:${port}`);
 });
