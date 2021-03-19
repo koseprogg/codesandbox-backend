@@ -40,7 +40,7 @@ router.get('/:name/', (req, res) => {
 router.get('/:name/day/:day', (req, res) => {
   const { day, name } = req.params;
 
-  CompetitionModel.find({ nameNormalized: normalizeString(name) })
+  CompetitionModel.findOne({ nameNormalized: normalizeString(name) })
     .select('name tasks')
     .populate({
       path: 'tasks',
