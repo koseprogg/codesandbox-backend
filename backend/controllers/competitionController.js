@@ -1,19 +1,18 @@
-import { VM } from 'vm2';
-import CompetitionModel from '../models/competitionModel.js';
-import { getTask } from './nutController.js';
-import { normalizeString } from '../utils/utils.js';
-import {
-  saveSubmission,
-} from './submissionController.js';
+const { VM } = require('vm2');
 
-export const getAllCompetitions = (req, res) => {
+const CompetitionModel = require('../models/competitionModel');
+const { getTask } = require('./nutController');
+const { normalizeString } = require('../utils/utils');
+const { saveSubmission } = require('./submissionController');
+
+const getAllCompetitions = (req, res) => {
   CompetitionModel.find({})
     .select('name isActive image')
     .then((competitions) => res.json(competitions))
     .catch(() => res.status(400).send('Something went wrong.'));
 };
 
-export const getCompetitionByName = (req, res) => {
+const getCompetitionByName = (req, res) => {
   const { name } = req.params;
 
   CompetitionModel.findOne({ nameNormalized: normalizeString(name) })
@@ -24,7 +23,7 @@ export const getCompetitionByName = (req, res) => {
     .catch(() => res.status(400).send('Something went wrong.'));
 };
 
-export const getNutByCompetitionNameAndDay = (req, res) => {
+const getNutByCompetitionNameAndDay = (req, res) => {
   const { day, name } = req.params;
 
   CompetitionModel.findOne({ nameNormalized: normalizeString(name) })
@@ -38,7 +37,7 @@ export const getNutByCompetitionNameAndDay = (req, res) => {
     .catch(() => res.status(400).send('Something went wrong.'));
 };
 
-export const runCodeForNut = async (req, res) => {
+const runCodeForNut = async (req, res) => {
   const { code } = req.body;
   const task = await getTask(req);
   const {
@@ -58,36 +57,38 @@ export const runCodeForNut = async (req, res) => {
       const testResult = vm.run(testCase.testCode);
 
       if (testResult === testCase.correctAnswer) {
-        return ({
+        return {
           testDescription: testCase.testDescription,
           achievedWeight: testCase.weight,
           success: true,
           yourOutput: JSON.stringify(testResult),
-        });
+        };
       }
-      return ({
+      return {
         testDescription: testCase.testDescription,
         achievedWeight: 0,
         success: false,
         yourOutput: JSON.stringify(testResult),
-      });
+      };
     });
   } catch (e) {
     stacktrace = e;
   }
 
   let score = 0;
-  testResults.forEach((testResult) => score += testResult.achievedWeight);
+  testResults.forEach((testResult) => (score += testResult.achievedWeight));
 
-  await saveSubmission(
-    req.user || 'testUser',
-    code,
-    score,
-    _id,
-  );
+  await saveSubmission(req.user || 'testUser', code, score, _id);
 
   res.status(200).send({
     result: testResults,
     msg: stacktrace.toString(),
   });
+};
+
+module.exports = {
+  getAllCompetitions,
+  getCompetitionByName,
+  getNutByCompetitionNameAndDay,
+  runCodeForNut,
 };
