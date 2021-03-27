@@ -10,7 +10,6 @@ const saveSubmission = async (submittingUser, submittedCode, achievedScore, task
     parentTask: new ObjectId(taskId),
     submittedCode,
     score: achievedScore,
-    submissionDate: new Date(),
     user: submittingUser,
   });
   const createdSubmission = await submission.save();
@@ -18,8 +17,6 @@ const saveSubmission = async (submittingUser, submittedCode, achievedScore, task
 };
 
 const getTaskSubmissionsByUser = async (req, res) => {
-  // const { user } = req.headers;
-  // const { name, day } = req.params;
   const name = 'Påskenøtt';
   const day = 6;
 
@@ -39,4 +36,28 @@ const getTaskSubmissionsByUser = async (req, res) => {
   res.status(200).send(submissions);
 };
 
-export { saveSubmission, getTaskSubmissionsByUser };
+const getTaskLeaderboard = async (req, res) => {
+  const { name, day } = req.params;
+
+  const competition = await CompetitionModel
+    .findOne({ name })
+    .populate({
+      path: 'tasks',
+      match: { day },
+      select: '_id',
+    });
+
+  const submissions = await SubmissionModel.aggregate([
+    { $match: { parentTask: new ObjectId(competition.tasks[0]._id) } },
+    {
+      $group: {
+        _id: '$user', createdAt: { $first: '$createdAt' }, score: { $first: '$score' },
+      },
+    },
+    { $sort: { score: -1, createdAt: 1 } },
+  ]);
+
+  res.status(200).send(submissions);
+};
+
+export { saveSubmission, getTaskSubmissionsByUser, getTaskLeaderboard };

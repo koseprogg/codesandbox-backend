@@ -4,7 +4,10 @@ import CompetitionModel from '../models/competitionModel.js';
 import TaskModel from '../models/taskModel.js';
 import { getTask } from '../controllers/nutController.js';
 import { normalizeString } from '../utils/utils.js';
-import { saveSubmission, getTaskSubmissionsByUser } from '../controllers/submissionController.js';
+import {
+  saveSubmission, getTaskSubmissionsByUser,
+  getTaskLeaderboard,
+} from '../controllers/submissionController.js';
 
 const router = express.Router();
 
@@ -51,6 +54,15 @@ router.get('/:name/day/:day', (req, res) => {
     .then((tasks) => res.json(tasks))
     .catch(() => res.status(400).send('Something went wrong.'));
 });
+
+router.get('/:name/day/:day/submissions', (req, res) => {
+  getTaskSubmissionsByUser(req, res);
+});
+
+router.get('/:name/day/:day/leaderboard', (req, res) => {
+  getTaskLeaderboard(req, res);
+});
+
 // .populate('tasks', 'name day description subtasks image prize')
 
 router.post('/:name/day/:day', async (req, res) => {

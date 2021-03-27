@@ -7,8 +7,9 @@ const SubmissionSchema = new Schema({
   submittedCode: String,
   score: Number,
   user: String,
-  date: Date,
   parentTask: { type: mongoose.Schema.Types.ObjectId, ref: 'tasks' },
+}, {
+  timestamps: true,
 }, {
   collection: 'submissions',
 });
