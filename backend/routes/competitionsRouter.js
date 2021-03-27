@@ -1,12 +1,12 @@
-import express from 'express';
-import {
+const express = require('express');
+const {
   getTaskSubmissionsByUser,
   getTaskLeaderboard,
-} from '../controllers/submissionController.js';
-import {
+} = require( '../controllers/submissionController');
+const {
   getAllCompetitions, getCompetitionByName,
   getNutByCompetitionNameAndDay, runCodeForNut,
-} from '../controllers/competitionController.js';
+} = require('../controllers/competitionController');
 
 const router = express.Router();
 
@@ -38,4 +38,4 @@ router.post('/:name/day/:day', async (req, res) => {
 
 const competitionsRouter = router;
 
-export default competitionsRouter;
+module.exports = competitionsRouter;

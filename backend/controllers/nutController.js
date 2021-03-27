@@ -1,7 +1,8 @@
-import mongoose from 'mongoose';
-import TaskModel from '../models/taskModel.js';
-import CompetitionModel from '../models/competitionModel.js';
-import { normalizeString } from '../utils/utils.js';
+const mongoose = require('mongoose');
+const { normalizeString } = require('../utils/utils');
+
+const TaskModel = require('../models/taskModel');
+const CompetitionModel = require('../models/competitionModel');
 
 const { ObjectId } = mongoose.Types;
 
@@ -17,4 +18,4 @@ const getTask = async (req) => {
   return foundTask;
 };
 
-export { getTask };
+module.exports = { runTaskCode };

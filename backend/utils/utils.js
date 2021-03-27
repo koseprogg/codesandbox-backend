@@ -7,14 +7,10 @@ const normalizeString = (stringToNormalize) => {
 
   let normalizedString = '';
 
-  [...stringToNormalize
-    .toLowerCase()
-    .split(' ')
-    .join('')]
-    .forEach((char) => {
-      normalizedString += characterReplacements[char] || char;
-    });
+  [...stringToNormalize.toLowerCase().split(' ').join('')].forEach((char) => {
+    normalizedString += characterReplacements[char] || char;
+  });
   return normalizedString;
 };
 
-export { normalizeString };
+module.exports = { normalizeString };
