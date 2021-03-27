@@ -1,4 +1,3 @@
-import vm from 'vm';
 import { VM } from 'vm2';
 import cors from 'cors';
 import express from 'express';
@@ -17,7 +16,7 @@ const port = process.env.PORT || 3000;
 app.use(
   express.urlencoded({
     extended: true,
-  })
+  }),
 );
 
 app.use(express.json());
@@ -39,19 +38,6 @@ if (process.env.NODE_ENV === 'production') {
   });
   app.use(apiLimiter);
 }
-
-app.post('/', (req, res) => {
-  const { code } = req.body;
-  const context = vm.createContext({
-    x: 200,
-  });
-  const result = vm.runInContext(code, context);
-
-  res.status(201).send({
-    result: { oppgave1: result, oppgave2: 'wrong' },
-    msg: result,
-  });
-});
 
 app.post('/script', (req, res) => {
   /*

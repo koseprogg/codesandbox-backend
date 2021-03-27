@@ -2,8 +2,12 @@ import express from 'express';
 import { VM } from 'vm2';
 import CompetitionModel from '../models/competitionModel.js';
 import TaskModel from '../models/taskModel.js';
-import { runTaskCode } from '../controllers/nutController.js';
+import { getTask } from '../controllers/nutController.js';
 import { normalizeString } from '../utils/utils.js';
+import {
+  saveSubmission, getTaskSubmissionsByUser,
+  getTaskLeaderboard,
+} from '../controllers/submissionController.js';
 
 const router = express.Router();
 
@@ -50,25 +54,34 @@ router.get('/:name/day/:day', (req, res) => {
     .then((tasks) => res.json(tasks))
     .catch(() => res.status(400).send('Something went wrong.'));
 });
+
+router.get('/:name/day/:day/submissions', (req, res) => {
+  getTaskSubmissionsByUser(req, res);
+});
+
+router.get('/:name/day/:day/leaderboard', (req, res) => {
+  getTaskLeaderboard(req, res);
+});
+
 // .populate('tasks', 'name day description subtasks image prize')
 
 router.post('/:name/day/:day', async (req, res) => {
   const { code } = req.body;
-  const task = await runTaskCode(req);
+  const task = await getTask(req);
   const {
-    context, testCases, prependedCode, appendedCode,
+    context, testCases, prependedCode, appendedCode, _id,
   } = task;
 
   const vm = new VM();
 
   let stacktrace = '';
-  let results = null;
+  let testResults = [];
   try {
     vm.run(prependedCode);
     vm.run(code);
     vm.run(appendedCode);
 
-    results = testCases.map((testCase) => {
+    testResults = testCases.map((testCase) => {
       const testResult = vm.run(testCase.testCode);
 
       if (testResult === testCase.correctAnswer) {
@@ -91,8 +104,18 @@ router.post('/:name/day/:day', async (req, res) => {
     console.log(e);
   }
 
+  let score = 0;
+  testResults.forEach((testResult) => score += testResult.achievedWeight);
+
+  await saveSubmission(
+    req.user || 'testUser',
+    code,
+    score,
+    _id,
+  );
+
   res.status(200).send({
-    result: results,
+    result: testResults,
     msg: stacktrace.toString(),
   });
 });
