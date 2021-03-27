@@ -1,0 +1,265 @@
+[{
+  "_id": {
+    "$oid": "6053bef05591a91a702fcf58"
+  },
+  "subtasks": [
+    "Lag noe",
+    "selg noe"
+  ],
+  "day": 2,
+  "name": "Egregius",
+  "description": "Hjelp Egregius med å telle",
+  "prize": "Big money",
+  "codeContext": [
+    {
+      "_id": {
+        "$oid": "6053bef05591a91a702fcf59"
+      },
+      "key": "x",
+      "value": "5"
+    },
+    {
+      "_id": {
+        "$oid": "6053bef05591a91a702fcf5a"
+      },
+      "key": "y",
+      "value": "200"
+    },
+    {
+      "_id": {
+        "$oid": "6053bef05591a91a702fcf5b"
+      },
+      "key": "function",
+      "value": "function(x, y) {return x+y}"
+    }
+  ],
+  "image": "https://thumbs.dreamstime.com/z/toy-easter-chickne-2102239.jpg",
+  "prependedCode": "y = 10;",
+  "appendedCode": "z = y+x",
+  "parentCompetition": {
+    "$oid": "6053bdb661479b0fae9f36f0"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6053c0e51964622e536d5f97"
+  },
+  "subtasks": [
+    "Lag noe",
+    "selg noe"
+  ],
+  "day": 3,
+  "name": "Egregius",
+  "description": "Hjelp Egregius med å telle",
+  "prize": "Big money",
+  "codeContext": [
+    {
+      "_id": {
+        "$oid": "6053c0e51964622e536d5f98"
+      },
+      "key": "penis",
+      "value": "5"
+    },
+    {
+      "_id": {
+        "$oid": "6053c0e51964622e536d5f99"
+      },
+      "key": "test",
+      "value": "200"
+    },
+    {
+      "_id": {
+        "$oid": "6053c0e51964622e536d5f9a"
+      },
+      "key": "function",
+      "value": "function(x, y) {return x+y}"
+    }
+  ],
+  "image": "https://thumbs.dreamstime.com/z/toy-easter-chickne-2102239.jpg",
+  "prependedCode": "penis = 10;",
+  "appendedCode": "panikk = y+x",
+  "parentCompetition": {
+    "$oid": "6053bdb661479b0fae9f36f0"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6053c8ca0ad968751fe5d091"
+  },
+  "subtasks": [
+    "Tall delelig på 3 skal printe Fizz",
+    "Tall delelig på 5 skal printe Buzz",
+    "Tall delelig på begge skal printe FizzBuzz",
+    "Hvis ingen av de over, returner tom string",
+    "Lag en funksjon kalt fizzbuzz som tar inn et tall og returnerer en passende streng."
+  ],
+  "day": 4,
+  "name": "FizzBuzz",
+  "description": "Hjelp meg med fizzbuzz!",
+  "testCases": [
+    {
+      "_id": {
+        "$oid": "6053c8ca0ad968751fe5d092"
+      },
+      "testCode": "const gdjiskd = fizzbuzz(3609); gdjiskd",
+      "weight": 20
+    },
+    {
+      "_id": {
+        "$oid": "6053c8ca0ad968751fe5d093"
+      },
+      "testCode": "const dskijfds = fizzbuzz(3608); dskijfds",
+      "weight": 20
+    },
+    {
+      "_id": {
+        "$oid": "6053c8ca0ad968751fe5d094"
+      },
+      "testCode": "const kjsdoap = fizzbuzz(900); kjsdoap",
+      "weight": 20
+    }
+  ],
+  "prize": "Netcompany bag",
+  "codeContext": [
+    {
+      "_id": {
+        "$oid": "6053c8ca0ad968751fe5d095"
+      },
+      "key": "function",
+      "value": "function(x, y) {return x+y}"
+    }
+  ],
+  "image": "https://thumbs.dreamstime.com/z/toy-easter-chickne-2102239.jpg",
+  "prependedCode": "",
+  "appendedCode": "",
+  "parentCompetition": {
+    "$oid": "6053bdb661479b0fae9f36f0"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6053c9f7ae46aaa1d8eae1af"
+  },
+  "subtasks": [
+    "Tall delelig på 3 skal printe Fizz",
+    "Tall delelig på 5 skal printe Buzz",
+    "Tall delelig på begge skal printe FizzBuzz",
+    "Hvis ingen av de over, returner tom string",
+    "Lag en funksjon kalt fizzbuzz som tar inn et tall og returnerer en passende streng."
+  ],
+  "day": 5,
+  "name": "FizzBuzz",
+  "description": "Hjelp meg med fizzbuzz!",
+  "testCases": [
+    {
+      "_id": {
+        "$oid": "6053c9f7ae46aaa1d8eae1b0"
+      },
+      "testCode": "const gdjiskd = fizzbuzz(3609); gdjiskd",
+      "weight": 20,
+      "correctAnswer": "Fizz"
+    },
+    {
+      "_id": {
+        "$oid": "6053c9f7ae46aaa1d8eae1b1"
+      },
+      "testCode": "const dskijfds = fizzbuzz(3608); dskijfds",
+      "weight": 20,
+      "correctAnswer": ""
+    },
+    {
+      "_id": {
+        "$oid": "6053c9f7ae46aaa1d8eae1b2"
+      },
+      "testCode": "const kjsdoap = fizzbuzz(900); kjsdoap",
+      "weight": 20,
+      "correctAnswer": "FizzBuzz"
+    }
+  ],
+  "prize": "Netcompany bag",
+  "codeContext": [
+    {
+      "_id": {
+        "$oid": "6053c9f7ae46aaa1d8eae1b3"
+      },
+      "key": "function",
+      "value": "function(x, y) {return x+y}"
+    }
+  ],
+  "image": "https://thumbs.dreamstime.com/z/toy-easter-chickne-2102239.jpg",
+  "prependedCode": "",
+  "appendedCode": "",
+  "parentCompetition": {
+    "$oid": "6053bdb661479b0fae9f36f0"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6053ccc0d938d9c384c36c12"
+  },
+  "subtasks": [
+    "Tall delelig på 3 skal printe Fizz",
+    "Tall delelig på 5 skal printe Buzz",
+    "Tall delelig på begge skal printe FizzBuzz",
+    "Hvis ingen av de over, returner tom string",
+    "Lag en funksjon kalt fizzbuzz som tar inn et tall og returnerer en passende streng."
+  ],
+  "day": 6,
+  "name": "FizzBuzz",
+  "description": "Hjelp meg med fizzbuzz!",
+  "testCases": [
+    {
+      "_id": {
+        "$oid": "6053ccc0d938d9c384c36c13"
+      },
+      "testCode": "const gdjiskd = fizzbuzz(3609); gdjiskd",
+      "weight": 20,
+      "correctAnswer": "Fizz",
+      "testDescription": "Correct output for numbers divisible by 3"
+    },
+    {
+      "_id": {
+        "$oid": "6053ccc1d938d9c384c36c14"
+      },
+      "testCode": "const dskijfds = fizzbuzz(3608); dskijfds",
+      "weight": 20,
+      "correctAnswer": "",
+      "testDescription": "Correct output for numbers not divisible by 3 nor 5"
+    },
+    {
+      "_id": {
+        "$oid": "6053ccc1d938d9c384c36c15"
+      },
+      "testCode": "const kjsdoap = fizzbuzz(900); kjsdoap",
+      "weight": 20,
+      "correctAnswer": "FizzBuzz",
+      "testDescription": "Correct output for numbers divisible by 15"
+    },
+    {
+      "_id": {
+        "$oid": "6053ccc1d938d9c384c36c16"
+      },
+      "testCode": "const poiuy = fizzbuzz(520*20); poiuy",
+      "weight": 20,
+      "correctAnswer": "Buzz",
+      "testDescription": "Correct output for numbers divisible by 5"
+    }
+  ],
+  "prize": "Netcompany bag",
+  "codeContext": [
+    {
+      "_id": {
+        "$oid": "6053ccc1d938d9c384c36c17"
+      },
+      "key": "function",
+      "value": "function(x, y) {return x+y}"
+    }
+  ],
+  "image": "https://thumbs.dreamstime.com/z/toy-easter-chickne-2102239.jpg",
+  "prependedCode": "",
+  "appendedCode": "",
+  "parentCompetition": {
+    "$oid": "6053bdb661479b0fae9f36f0"
+  },
+  "__v": 0
+}]

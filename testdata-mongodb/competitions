@@ -1,0 +1,36 @@
+[{
+  "_id": {
+    "$oid": "6053bdb661479b0fae9f36f0"
+  },
+  "tasks": [
+    {
+      "$oid": "6053bdb861479b0fae9f36f1"
+    },
+    {
+      "$oid": "6053be4f6379f311eaf32ea6"
+    },
+    {
+      "$oid": "6053be7bfff53f17c086eb5d"
+    },
+    {
+      "$oid": "6053bef05591a91a702fcf58"
+    },
+    {
+      "$oid": "6053c0e51964622e536d5f97"
+    },
+    {
+      "$oid": "6053c8ca0ad968751fe5d091"
+    },
+    {
+      "$oid": "6053c9f7ae46aaa1d8eae1af"
+    },
+    {
+      "$oid": "6053ccc0d938d9c384c36c12"
+    }
+  ],
+  "name": "Påskenøtt",
+  "image": "https://thumbs.dreamstime.com/z/toy-easter-chickne-2102239.jpg",
+  "isActive": true,
+  "nameNormalized": "paaskenott",
+  "__v": 0
+}]
