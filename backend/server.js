@@ -62,5 +62,5 @@ app.post('/script', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`backend listening at ${port}`);
+  console.log(`backend listening at http://localhost:${port}`);
 });

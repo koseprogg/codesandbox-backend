@@ -3,8 +3,7 @@ import CompetitionModel from '../models/competitionModel.js';
 import { getTask } from './nutController.js';
 import { normalizeString } from '../utils/utils.js';
 import {
-  saveSubmission, getTaskSubmissionsByUser,
-  getTaskLeaderboard,
+  saveSubmission,
 } from './submissionController.js';
 
 export const getAllCompetitions = (req, res) => {
