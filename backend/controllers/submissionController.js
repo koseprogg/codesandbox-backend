@@ -17,8 +17,8 @@ const saveSubmission = async (submittingUser, submittedCode, achievedScore, task
 };
 
 const getTaskSubmissionsByUser = async (req, res) => {
-  const name = 'Påskenøtt';
-  const day = 6;
+  const { name, day } = req.params;
+  const { user } = req;
 
   const competition = await CompetitionModel
     .findOne({ name })
@@ -30,7 +30,7 @@ const getTaskSubmissionsByUser = async (req, res) => {
 
   const submissions = await SubmissionModel.find({
     parentTask: competition.tasks[0]._id,
-    user: 'testUser',
+    user,
   });
 
   res.status(200).send(submissions);
