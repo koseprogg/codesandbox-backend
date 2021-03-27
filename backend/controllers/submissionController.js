@@ -10,6 +10,7 @@ const saveSubmission = async (submittingUser, submittedCode, achievedScore, task
     parentTask: new ObjectId(taskId),
     submittedCode,
     score: achievedScore,
+    submissionDate: new Date(),
     user: submittingUser,
   });
   const createdSubmission = await submission.save();
@@ -30,15 +31,12 @@ const getTaskSubmissionsByUser = async (req, res) => {
       select: '_id',
     });
 
-  console.log(competition);
-
   const submissions = await SubmissionModel.find({
     parentTask: competition.tasks[0]._id,
-    // user: 'testUser',
+    user: 'testUser',
   });
-  console.log(submissions);
 
-  res.status(200).send(competition);
+  res.status(200).send(submissions);
 };
 
 export { saveSubmission, getTaskSubmissionsByUser };
