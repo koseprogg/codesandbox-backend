@@ -5,6 +5,9 @@ const express = require('express');
 const fetch = require('node-fetch');
 const jwt = require('jsonwebtoken');
 
+const RateLimit = require('express-rate-limit');
+const RedisStore = require('rate-limit-redis');
+
 const adminRouter = require('./routes/adminRouter');
 const competitionsRouter = require('./routes/competitionsRouter');
 

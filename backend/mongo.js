@@ -13,7 +13,7 @@ const connectToMongoDb = () => {
       useUnifiedTopology: true,
       useFindAndModify: false,
     })
-    .catch((err) => console.err(err));
+    .catch((err) => console.error(err));
 };
 
 module.exports = connectToMongoDb;
