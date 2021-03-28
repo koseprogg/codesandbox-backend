@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const SubmissionModel = require('../models/submissionModel');
 const CompetitionModel = require('../models/competitionModel');
-const UserModel = require('../models/UserModel');
 
 const { ObjectId } = mongoose.Types;
 

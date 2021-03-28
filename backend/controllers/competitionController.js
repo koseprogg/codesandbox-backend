@@ -57,12 +57,15 @@ const runCodeForNut = async (req, res) => {
     vm.run(code);
     vm.run(appendedCode);
 
-    testCases.forEach((testCase) => totalPossibleWeight += testCase.weight);
+    testCases.forEach((testCase) => (totalPossibleWeight += testCase.weight));
 
     testResults = testCases.map((testCase) => {
       const testResult = vm.run(testCase.testCode);
 
-      if (testResult === testCase.correctAnswer) {
+      // TODO FIXME
+      const correctAnswer = JSON.parse(testCase.correctAnswer);
+
+      if (testResult === correctAnswer) {
         return {
           testDescription: testCase.testDescription,
           achievedWeight: testCase.weight,
