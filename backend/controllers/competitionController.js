@@ -82,11 +82,15 @@ const runCodeForNut = async (req, res) => {
   }
 
   let totalAchievedWeight = 0;
-  testResults.forEach((testResult) => totalAchievedWeight += testResult.achievedWeight);
+  testResults.forEach((testResult) => {
+    totalAchievedWeight += testResult.achievedWeight;
+  });
 
   const score = Math.floor((totalAchievedWeight / totalPossibleWeight) * 100);
 
-  await saveSubmission(req.user || 'testUser', code, totalAchievedWeight, _id);
+  if (req.user) {
+    await saveSubmission(req.user, code, score, _id);
+  }
 
   res.status(200).send({
     result: {
