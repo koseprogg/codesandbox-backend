@@ -89,7 +89,7 @@ const runCodeForNut = async (req, res) => {
   const score = Math.floor((totalAchievedWeight / totalPossibleWeight) * 100);
 
   if (req.user) {
-    await saveSubmission(req.user, code, score, _id);
+    await saveSubmission(req.user, code, totalAchievedWeight, _id);
   }
 
   res.status(200).send({
