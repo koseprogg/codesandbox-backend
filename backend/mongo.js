@@ -1,10 +1,9 @@
-const dotenv = require('dotenv');
 const mongoose = require('mongoose');
-
-dotenv.config();
 
 const mongoUri = process.env.MONGODB_URI;
 const mongoUriProd = process.env.MONGODB_PROD_URI;
+
+console.log(mongoUri);
 
 const connectToMongoDb = () => {
   mongoose

@@ -4,6 +4,7 @@ const cors = require('cors');
 const express = require('express');
 const fetch = require('node-fetch');
 const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
 
 const RateLimit = require('express-rate-limit');
 const RedisStore = require('rate-limit-redis');
@@ -21,6 +22,8 @@ const port = process.env.PORT || 3000;
 
 const serverUrl = process.env.SERVER_URL || 'http://localhost:3000';
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4000';
+
+dotenv.config();
 
 app.use(
   express.urlencoded({
