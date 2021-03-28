@@ -7,7 +7,7 @@ const SubmissionSchema = new Schema(
     _id: mongoose.Schema.Types.ObjectId,
     submittedCode: String,
     score: Number,
-    user: String,
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
     parentTask: { type: mongoose.Schema.Types.ObjectId, ref: 'tasks' },
   },
   {
