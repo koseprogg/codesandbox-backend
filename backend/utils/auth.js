@@ -1,15 +1,24 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/UserModel');
 
-const jwtAuth = (req, res, next) => {
+const jwtAuth = async (req, res, next) => {
   if (req.headers.authorization) {
     const [, token] = req.headers.authorization.split(' ');
     if (token) {
-      jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
-        if (!err) req.user = user;
+      await jwt.verify(token, process.env.SECRET_KEY, async (err, user) => {
+        if (!err) {
+          const dbUser = await User.findOne({ username: user.data.username });
+          if (dbUser) req.user = dbUser;
+        }
       });
     }
   }
   next();
 };
 
-module.exports = { jwtAuth };
+const ensureAuth = (req, res, next) => {
+  if (!req.user) res.status(401).send('Unauthenticated: Please log in to see this resource');
+  else next();
+};
+
+module.exports = { jwtAuth, ensureAuth };

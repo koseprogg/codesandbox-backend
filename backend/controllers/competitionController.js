@@ -76,9 +76,13 @@ const runCodeForNut = async (req, res) => {
   }
 
   let score = 0;
-  testResults.forEach((testResult) => (score += testResult.achievedWeight));
+  testResults.forEach((testResult) => {
+    score += testResult.achievedWeight;
+  });
 
-  await saveSubmission(req.user || 'testUser', code, score, _id);
+  if (req.user) {
+    await saveSubmission(req.user, code, score, _id);
+  }
 
   res.status(200).send({
     result: testResults,
