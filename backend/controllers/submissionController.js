@@ -74,11 +74,6 @@ const getCompetitionLeaderboard = async (req, res) => {
       },
     },
     {
-      $match: {
-        score: { $gt: 0 },
-      },
-    },
-    {
       $lookup: {
         from: 'users',
         let: { task_id: '$_id' },
