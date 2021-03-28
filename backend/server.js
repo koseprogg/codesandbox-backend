@@ -31,6 +31,21 @@ app.use(
   }),
 );
 
+// If the env is PROD we use a simple redis rate-limiter
+if (process.env.NODE_ENV === 'production') {
+  const apiLimiter = new RateLimit({
+    store: new RedisStore({
+      redisURL: 'redis://redis:6379',
+      expiry: 1,
+    }),
+    max: 50,
+    statusCode: 429,
+    message: 'Rate limit exceeded. Please wait',
+  });
+  app.set('trust proxy', true);
+  app.use(apiLimiter);
+}
+
 // jwtAuth appends user data to the request
 // access with req.user
 // May be undefined if not authenticated
@@ -123,19 +138,6 @@ app.get('/auth/callback', async (req, res) => {
   return res.status(200);
 });
 
-if (process.env.NODE_ENV === 'production') {
-  const apiLimiter = new RateLimit({
-    store: new RedisStore({
-      redisURL: 'redis://redis:6379',
-      expiry: 1,
-    }),
-    max: 50,
-    statusCode: 429,
-    message: 'Rate limit exceeded. Please wait',
-  });
-  app.use(apiLimiter);
-}
-
 app.post('/script', (req, res) => {
   /*
     Uses vm2 instead of vm. Supposedly more secure: https://odino.org/eval-no-more-understanding-vm-vm2-nodejs/
@@ -159,5 +161,5 @@ app.post('/script', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`backend listening at http://localhost:${port}`);
+  console.log(`backend listening at ${port}`);
 });
