@@ -44,16 +44,14 @@ const runCodeForNut = async (req, res) => {
     context, testCases, prependedCode, appendedCode, _id,
   } = task;
 
-  const vm = new VM();
-
   let stacktrace = '';
   let testResults = [];
   try {
-    vm.run(prependedCode);
-    vm.run(code);
-    vm.run(appendedCode);
-
     testResults = testCases.map((testCase) => {
+      const vm = new VM();
+      vm.run(prependedCode);
+      vm.run(code);
+      vm.run(appendedCode);
       const testResult = vm.run(testCase.testCode);
 
       if (testResult === testCase.correctAnswer) {
