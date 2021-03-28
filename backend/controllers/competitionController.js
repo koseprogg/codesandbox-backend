@@ -1,3 +1,4 @@
+/* eslint-disable no-return-assign */
 const { VM } = require('vm2');
 
 const CompetitionModel = require('../models/competitionModel');
@@ -44,14 +45,19 @@ const runCodeForNut = async (req, res) => {
     context, testCases, prependedCode, appendedCode, _id,
   } = task;
 
-  const vm = new VM();
+  const vm = new VM({
+    timeout: 10000,
+  });
 
   let stacktrace = '';
   let testResults = [];
+  let totalPossibleWeight = 0;
   try {
     vm.run(prependedCode);
     vm.run(code);
     vm.run(appendedCode);
+
+    testCases.forEach((testCase) => totalPossibleWeight += testCase.weight);
 
     testResults = testCases.map((testCase) => {
       const testResult = vm.run(testCase.testCode);
@@ -75,17 +81,23 @@ const runCodeForNut = async (req, res) => {
     stacktrace = e;
   }
 
-  let score = 0;
+  let totalAchievedWeight = 0;
   testResults.forEach((testResult) => {
-    score += testResult.achievedWeight;
+    totalAchievedWeight += testResult.achievedWeight;
   });
 
+  const score = Math.floor((totalAchievedWeight / totalPossibleWeight) * 100);
+
   if (req.user) {
-    await saveSubmission(req.user, code, score, _id);
+    await saveSubmission(req.user, code, totalAchievedWeight, _id);
   }
 
   res.status(200).send({
-    result: testResults,
+    result: {
+      score,
+      possibleScore: totalPossibleWeight,
+      achievedScore: totalAchievedWeight,
+    },
     msg: stacktrace.toString(),
   });
 };
