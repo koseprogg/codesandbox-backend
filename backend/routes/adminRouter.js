@@ -1,8 +1,8 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import CompetitionModel from '../models/competitionModel.js';
-import TaskModel from '../models/taskModel.js';
-import { normalizeString } from '../utils/utils.js';
+const express = require('express');
+const mongoose = require('mongoose');
+const CompetitionModel = require('../models/competitionModel.js');
+const TaskModel = require('../models/taskModel.js');
+const { normalizeString } = require('../utils/utils.js');
 
 const router = express.Router();
 const { ObjectId } = mongoose.Types;
@@ -10,10 +10,14 @@ const { ObjectId } = mongoose.Types;
 router.post('/competitions', async (req, res) => {
   const { competitionDetails } = req.body;
 
-  const existingCompetition = await CompetitionModel.find({ name: competitionDetails.name });
+  const existingCompetition = await CompetitionModel.find({
+    name: competitionDetails.name,
+  });
   if (existingCompetition.length === 0) {
     competitionDetails._id = new ObjectId();
-    competitionDetails.nameNormalized = normalizeString(competitionDetails.name);
+    competitionDetails.nameNormalized = normalizeString(
+      competitionDetails.name,
+    );
     const competition = new CompetitionModel(competitionDetails);
     const created = await new CompetitionModel(competition).save();
     res.status(200).send(created);
@@ -38,9 +42,11 @@ router.post('/competitions/:names/', async (req, res) => {
       taskDetails.parentCompetition = existingCompetitionId;
       const createdTask = await new TaskModel(taskDetails).save();
 
-      await CompetitionModel.findByIdAndUpdate({ _id: existingCompetitionId },
+      await CompetitionModel.findByIdAndUpdate(
+        { _id: existingCompetitionId },
         { $push: { tasks: createdTask._id } },
-        { new: true, useFindAndModify: false });
+        { new: true, useFindAndModify: false },
+      );
       res.status(200).send(createdTask);
     } else {
       res.status(409).send('Task day already taken for this competition.');
@@ -50,4 +56,4 @@ router.post('/competitions/:names/', async (req, res) => {
 
 const adminRouter = router;
 
-export default adminRouter;
+module.exports = adminRouter;

@@ -1,17 +1,23 @@
-import { VM } from 'vm2';
-import cors from 'cors';
-import express from 'express';
+const { VM } = require('vm2');
+const { AuthorizationCode } = require('simple-oauth2');
+const cors = require('cors');
+const express = require('express');
+const fetch = require('node-fetch');
+const jwt = require('jsonwebtoken');
 
-// Express production rate limit
-import RateLimit from 'express-rate-limit';
-import RedisStore from 'rate-limit-redis';
+const adminRouter = require('./routes/adminRouter');
+const competitionsRouter = require('./routes/competitionsRouter');
 
-import adminRouter from './routes/adminRouter.js';
-import competitionsRouter from './routes/competitionsRouter.js';
-import connectToMongoDb from './mongo.mjs';
+const connectToMongoDb = require('./mongo');
+
+const User = require('./models/UserModel');
+const { jwtAuth } = require('./utils/auth');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+const serverUrl = process.env.SERVER_URL || 'http://localhost:3000';
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4000';
 
 app.use(
   express.urlencoded({
@@ -19,12 +25,97 @@ app.use(
   }),
 );
 
+// jwtAuth appends user data to the request
+// access with req.user
+// May be undefined if not authenticated
+app.use(jwtAuth);
+
 app.use(express.json());
 app.use(cors());
 
+const config = {
+  client: {
+    id: process.env.OAUTH2_ID,
+    secret: process.env.OAUTH2_SECRET,
+  },
+  auth: {
+    tokenHost: process.env.OAUTH2_HOST,
+    tokenPath: '/authorization/oauth2/token/',
+    authorizePath: '/authorization/oauth2/authorize/',
+  },
+};
+
+const client = new AuthorizationCode(config);
+
+connectToMongoDb(app);
+
 app.use('/admin', adminRouter);
 app.use('/competitions', competitionsRouter);
-connectToMongoDb(app);
+
+app.get('/auth', async (req, res) => {
+  const authorizationUri = client.authorizeURL({
+    redirect_uri: `${serverUrl}/auth/callback`,
+    scope: 'user',
+  });
+
+  res.redirect(authorizationUri);
+});
+
+app.get('/auth/callback', async (req, res) => {
+  const { code } = req.query;
+
+  const tokenParams = {
+    code,
+    redirect_uri: `${serverUrl}/auth/callback`,
+  };
+
+  const accessToken = await client.getToken(tokenParams);
+  const userDataRaw = await fetch(
+    `${process.env.OAUTH2_HOST}/api/v1/users/oauth2_userdata`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken.token.access_token}`,
+      },
+    },
+  );
+  const userData = await userDataRaw.json();
+
+  const {
+    username,
+    firstName,
+    lastName,
+    emailAddress,
+    profilePicture,
+  } = userData;
+
+  const user = await User.findOneAndUpdate(
+    { username },
+    {
+      firstName,
+      lastName,
+      emailAddress,
+      profilePicture,
+    },
+    {
+      upsert: true,
+      new: true,
+      setDefaultsOnInsert: true,
+    },
+  );
+
+  const token = jwt.sign(
+    {
+      data: user,
+    },
+    process.env.SECRET_KEY,
+    { expiresIn: 3600 },
+  );
+
+  res.cookie('auth', token);
+  res.redirect(frontendUrl);
+
+  return res.status(200);
+});
 
 if (process.env.NODE_ENV === 'production') {
   const apiLimiter = new RateLimit({
