@@ -45,7 +45,9 @@ const runCodeForNut = async (req, res) => {
     context, testCases, prependedCode, appendedCode, _id,
   } = task;
 
-  const vm = new VM();
+  const vm = new VM({
+    timeout: 10000,
+  });
 
   let stacktrace = '';
   let testResults = [];
@@ -87,7 +89,11 @@ const runCodeForNut = async (req, res) => {
   await saveSubmission(req.user || 'testUser', code, totalAchievedWeight, _id);
 
   res.status(200).send({
-    result: score,
+    result: {
+      score,
+      possibleScore: totalPossibleWeight,
+      achievedScore: totalAchievedWeight,
+    },
     msg: stacktrace.toString(),
   });
 };
