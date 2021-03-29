@@ -65,9 +65,17 @@ const getCompetitionLeaderboard = async (req, res) => {
         },
       },
     },
+    { $sort: { score: -1, createdAt: 1 } },
     {
       $group: {
-        _id: '$user',
+        _id: { user: '$user', parentTask: '$parentTask' },
+        createdAt: { $first: '$createdAt' },
+        score: { $first: '$score' },
+      },
+    },
+    {
+      $group: {
+        _id: '$_id.user',
         createdAt: { $first: '$createdAt' },
         score: { $sum: '$score' },
       },
@@ -95,7 +103,6 @@ const getCompetitionLeaderboard = async (req, res) => {
     {
       $unwind: '$users',
     },
-    { $sort: { score: -1, createdAt: 1 } },
   ]);
 
   res.status(200).send(submissions);
