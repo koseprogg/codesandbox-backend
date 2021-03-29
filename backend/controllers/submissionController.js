@@ -103,6 +103,7 @@ const getCompetitionLeaderboard = async (req, res) => {
     {
       $unwind: '$users',
     },
+    { $sort: { score: -1, createdAt: 1 } },
   ]);
 
   res.status(200).send(submissions);
