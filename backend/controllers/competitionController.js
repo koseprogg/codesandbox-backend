@@ -50,6 +50,8 @@ const runCodeForNut = async (req, res) => {
   let totalPossibleWeight = 0;
   testCases.forEach((testCase) => (totalPossibleWeight += testCase.weight));
 
+  const timeStart = process.hrtime();
+
   testResults = testCases.map((testCase) => {
     try {
       const vm = new VM({
@@ -87,6 +89,8 @@ const runCodeForNut = async (req, res) => {
       };
     }
   });
+  const timeElapsed = process.hrtime(timeStart);
+  const elapsedTimeInMilis = timeElapsed[1] / 1000000;
 
   let totalAchievedWeight = 0;
   testResults.forEach((testResult) => {
@@ -94,9 +98,11 @@ const runCodeForNut = async (req, res) => {
   });
 
   const score = Math.floor((totalAchievedWeight / totalPossibleWeight) * 100);
+  const characterCount = code.length;
 
   if (req.user) {
-    await saveSubmission(req.user, code, totalAchievedWeight, _id);
+    await saveSubmission(req.user, code, totalAchievedWeight,
+      elapsedTimeInMilis, characterCount, _id);
   }
 
   res.status(200).send({

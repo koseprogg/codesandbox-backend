@@ -9,6 +9,8 @@ const SubmissionSchema = new Schema(
     score: Number,
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
     parentTask: { type: mongoose.Schema.Types.ObjectId, ref: 'tasks' },
+    executionTime: Number,
+    codeCharacterCount: Number,
   },
   {
     timestamps: true,

@@ -8,12 +8,16 @@ const saveSubmission = async (
   submittingUser,
   submittedCode,
   achievedScore,
+  executionTime,
+  characterCount,
   taskId,
 ) => {
   const submission = new SubmissionModel({
     _id: new ObjectId(),
     parentTask: new ObjectId(taskId),
     submittedCode,
+    executionTime,
+    codeCharacterCount: characterCount,
     score: achievedScore,
     user: submittingUser,
   });
@@ -126,12 +130,14 @@ const getTaskLeaderboard = async (req, res) => {
   const submissions = await SubmissionModel.aggregate([
     { $match: { parentTask: new ObjectId(competition.tasks[0]._id) } },
     { $match: { score: { $gt: 0 } } },
-    { $sort: { score: -1 } },
+    { $sort: { score: -1, characterCount: -1 } },
     {
       $group: {
         _id: '$user',
         createdAt: { $first: '$createdAt' },
         score: { $first: '$score' },
+        executionTime: { $first: '$executionTime' },
+        characterCount: { $first: '$codeCharacterCount' },
       },
     },
     {
