@@ -98,9 +98,11 @@ const runCodeForNut = async (req, res) => {
   });
 
   const score = Math.floor((totalAchievedWeight / totalPossibleWeight) * 100);
+  const characterCount = code.length;
 
   if (req.user) {
-    await saveSubmission(req.user, code, totalAchievedWeight, elapsedTimeInMilis, _id);
+    await saveSubmission(req.user, code, totalAchievedWeight,
+      elapsedTimeInMilis, characterCount, _id);
   }
 
   res.status(200).send({

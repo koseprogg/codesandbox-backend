@@ -9,6 +9,7 @@ const saveSubmission = async (
   submittedCode,
   achievedScore,
   executionTime,
+  characterCount,
   taskId,
 ) => {
   const submission = new SubmissionModel({
@@ -16,6 +17,7 @@ const saveSubmission = async (
     parentTask: new ObjectId(taskId),
     submittedCode,
     executionTime,
+    codeCharacterCount: characterCount,
     score: achievedScore,
     user: submittingUser,
   });
