@@ -130,7 +130,7 @@ const getTaskLeaderboard = async (req, res) => {
   const submissions = await SubmissionModel.aggregate([
     { $match: { parentTask: new ObjectId(competition.tasks[0]._id) } },
     { $match: { score: { $gt: 0 } } },
-    { $sort: { score: -1 } },
+    { $sort: { score: -1, characterCount: -1 } },
     {
       $group: {
         _id: '$user',
