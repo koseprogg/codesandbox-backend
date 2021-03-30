@@ -136,6 +136,8 @@ const getTaskLeaderboard = async (req, res) => {
         _id: '$user',
         createdAt: { $first: '$createdAt' },
         score: { $first: '$score' },
+        executionTime: { $first: '$executionTime' },
+        characterCount: { $first: '$codeCharacterCount' },
       },
     },
     {
