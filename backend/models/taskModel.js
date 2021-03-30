@@ -8,7 +8,6 @@ const TaskSchema = new Schema(
     day: Number,
     name: String,
     description: String,
-    subtasks: [String],
     testCases: [
       {
         testCode: String,
