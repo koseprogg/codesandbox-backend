@@ -45,21 +45,19 @@ const runCodeForNut = async (req, res) => {
     context, testCases, prependedCode, appendedCode, _id,
   } = task;
 
-  const vm = new VM({
-    timeout: 10000,
-  });
-
   let stacktrace = '';
   let testResults = [];
   let totalPossibleWeight = 0;
   try {
-    vm.run(prependedCode);
-    vm.run(code);
-    vm.run(appendedCode);
-
     testCases.forEach((testCase) => (totalPossibleWeight += testCase.weight));
 
     testResults = testCases.map((testCase) => {
+      const vm = new VM({
+        timeout: 10000,
+      });
+      vm.run(prependedCode);
+      vm.run(code);
+      vm.run(appendedCode);
       const testResult = vm.run(testCase.testCode);
 
       // TODO FIXME
