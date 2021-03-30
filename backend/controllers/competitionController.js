@@ -110,6 +110,8 @@ const runCodeForNut = async (req, res) => {
       score,
       possibleScore: totalPossibleWeight,
       achievedScore: totalAchievedWeight,
+      characterCount,
+      elapsedTimeInMilis,
     },
     msg: stacktrace.toString(),
   });
