@@ -42,16 +42,16 @@ const runCodeForNut = async (req, res) => {
   const { code } = req.body;
   const task = await getTask(req);
   const {
-    context, testCases, prependedCode, appendedCode, _id,
+    testCases, prependedCode, appendedCode, _id,
   } = task;
 
   let stacktrace = '';
   let testResults = [];
   let totalPossibleWeight = 0;
-  try {
-    testCases.forEach((testCase) => (totalPossibleWeight += testCase.weight));
+  testCases.forEach((testCase) => (totalPossibleWeight += testCase.weight));
 
-    testResults = testCases.map((testCase) => {
+  testResults = testCases.map((testCase) => {
+    try {
       const vm = new VM({
         timeout: 10000,
       });
@@ -77,10 +77,16 @@ const runCodeForNut = async (req, res) => {
         success: false,
         yourOutput: JSON.stringify(testResult),
       };
-    });
-  } catch (e) {
-    stacktrace = e;
-  }
+    } catch (e) {
+      stacktrace = e;
+      return {
+        testDescription: testCase.testDescription,
+        achievedWeight: 0,
+        success: false,
+        yourOutput: '',
+      };
+    }
+  });
 
   let totalAchievedWeight = 0;
   testResults.forEach((testResult) => {
