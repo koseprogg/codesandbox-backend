@@ -65,7 +65,8 @@ const runCodeForNut = async (req, res) => {
       // TODO FIXME
       const correctAnswer = JSON.parse(testCase.correctAnswer);
 
-      if (testResult === correctAnswer) {
+      // eslint-disable-next-line eqeqeq
+      if (testResult == correctAnswer) {
         return {
           testDescription: testCase.testDescription,
           achievedWeight: testCase.weight,
