@@ -1,14 +1,24 @@
 const ensureLegalCode = (req, res, next) => {
   const { code } = req.body;
-  const blackList = ['throw', 'Error'];
-  const splitCode = code.split(' ');
+  const blackListReg = [
+    {
+      regEx: /(throw)\b/g,
+      keyword: 'throw',
+    },
+    {
+      regEx: /(Error)\b/g,
+      keyword: 'Error',
+    },
+  ];
+
   let legalCode = true;
-  for (let i = 0; i < blackList.length; i += 1) {
-    if (splitCode.includes(blackList[i])) {
-      legalCode = false;
-      res.status(400).send({
-        msg: `Du får ikke lov til å bruke følgende keyword: ${blackList[i]}`,
+
+  for (let i = 0; i < blackListReg.length; i += 1) {
+    if (blackListReg[i].regEx.test(code)) {
+      res.status(200).send({
+        msg: `Du får ikke lov til å bruke følgende keyword: ${blackListReg[i].keyword}`,
       });
+      legalCode = false;
       break;
     }
   }
