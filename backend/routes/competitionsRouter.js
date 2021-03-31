@@ -11,6 +11,7 @@ const {
   getNutByCompetitionNameAndDay,
   runCodeForNut,
 } = require('../controllers/competitionController');
+const { ensureLegalCode } = require('../utils/codeValidation');
 
 const router = express.Router();
 
@@ -40,7 +41,7 @@ router.get('/:name/day/:day/leaderboard', ensureAuth, (req, res) => {
   getTaskLeaderboard(req, res);
 });
 
-router.post('/:name/day/:day', async (req, res) => {
+router.post('/:name/day/:day', ensureLegalCode, async (req, res) => {
   runCodeForNut(req, res);
 });
 
