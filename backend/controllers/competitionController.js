@@ -18,7 +18,7 @@ const getCompetitionByName = (req, res) => {
 
   CompetitionModel.findOne({ nameNormalized: normalizeString(name) })
     .select('name isActive image tasks')
-    .populate('tasks', 'name day description subtasks image prize')
+    .populate('tasks', 'name day description image prize')
     .sort('-day')
     .then((tasks) => res.json(tasks))
     .catch(() => res.status(400).send('Something went wrong.'));
@@ -32,7 +32,7 @@ const getNutByCompetitionNameAndDay = (req, res) => {
     .populate({
       path: 'tasks',
       match: { day: parseInt(day, 10) },
-      select: 'name day description subtasks image prize',
+      select: 'name day description image prize',
     })
     .then((tasks) => res.json(tasks))
     .catch(() => res.status(400).send('Something went wrong.'));
