@@ -80,7 +80,7 @@ jobs:
 
     steps:
       - uses: appleboy/ssh-action@v0.1.4
-        name: Deploy new frontend container
+        name: Deploy new backend container
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
