@@ -39,7 +39,7 @@ const getNutByCompetitionNameAndDay = (req, res) => {
 };
 
 const runCodeForNut = async (req, res) => {
-  const { code } = req.body;
+  const { code, sendSubmission } = req.body;
   const task = await getTask(req);
   const {
     testCases, prependedCode, appendedCode, _id,
@@ -101,7 +101,7 @@ const runCodeForNut = async (req, res) => {
   const score = Math.floor((totalAchievedWeight / totalPossibleWeight) * 100);
   const characterCount = code.length;
 
-  if (req.user) {
+  if (req.user && sendSubmission !== false) {
     await saveSubmission(req.user, code, totalAchievedWeight,
       elapsedTimeInMilis, characterCount, _id);
   }
