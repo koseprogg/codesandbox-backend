@@ -15,7 +15,7 @@ const ensureLegalCode = (req, res, next) => {
 
   for (let i = 0; i < blackListReg.length; i += 1) {
     if (blackListReg[i].regEx.test(code)) {
-      res.status(200).send({
+      res.status(400).send({
         msg: `Du får ikke lov til å bruke følgende keyword: ${blackListReg[i].keyword}`,
       });
       legalCode = false;
