@@ -147,7 +147,7 @@ const getTaskLeaderboard = async (req, res) => {
     {
       $sort: {
         score: -1,
-        hasCharCount: -1,
+        hasCharCount: 1,
         characterCount: 1,
         executionTime: 1,
       },
@@ -159,6 +159,7 @@ const getTaskLeaderboard = async (req, res) => {
         score: { $first: '$score' },
         executionTime: { $first: '$executionTime' },
         characterCount: { $first: '$codeCharacterCount' },
+        hasCharCount: { $first: '$hasCharCount' },
       },
     },
     {
@@ -184,7 +185,14 @@ const getTaskLeaderboard = async (req, res) => {
     {
       $unwind: '$users',
     },
-    { $sort: { score: -1, characterCount: 1, executionTime: 1 } },
+    {
+      $sort: {
+        score: -1,
+        hasCharCount: -1,
+        characterCount: 1,
+        executionTime: 1,
+      },
+    },
   ]);
 
   res.status(200).send(submissions);
