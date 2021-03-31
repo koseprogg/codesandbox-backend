@@ -6,15 +6,8 @@ const ensureLegalCode = (req, res, next) => {
   for (let i = 0; i < blackList.length; i += 1) {
     if (splitCode.includes(blackList[i])) {
       legalCode = false;
-      res.status(200).send({
-        result: {
-          score: 0,
-          possibleScore: 0,
-          achievedScore: 0,
-          characterCount: code.length,
-          elapsedTimeInMilis: 0,
-        },
-        msg: `Illegal keyword: ${blackList[i]}`,
+      res.status(400).send({
+        msg: `Du får ikke lov til å bruke følgende keyword: ${blackList[i]}`,
       });
       break;
     }
