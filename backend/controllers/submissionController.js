@@ -136,8 +136,12 @@ const getTaskLeaderboard = async (req, res) => {
     },
     {
       // Compat: Documents before codeCharacterCount and time was added won't sort correctly
-      hasCharCount: {
-        $cond: [{ $gt: ['$codeCharacterCount', 0] }, true, false],
+      $addFields: {
+        hasCharCount: {
+          $cond: [
+            { $gt: ['$codeCharacterCount', 0] }, true, false,
+          ],
+        },
       },
     },
     {
