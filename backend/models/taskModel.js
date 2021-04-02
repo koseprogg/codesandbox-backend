@@ -25,6 +25,7 @@ const TaskSchema = new Schema(
     ],
     image: String,
     prependedCode: String,
+    forbiddenRegexes: [String],
     appendedCode: String,
     parentCompetition: {
       type: mongoose.Schema.Types.ObjectId,

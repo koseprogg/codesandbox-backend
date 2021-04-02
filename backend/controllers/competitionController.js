@@ -42,13 +42,23 @@ const runCodeForNut = async (req, res) => {
   const { code, sendSubmission } = req.body;
   const task = await getTask(req);
   const {
-    testCases, prependedCode, appendedCode, _id,
+    testCases, prependedCode, appendedCode, _id, forbiddenRegexes,
   } = task;
 
   let stacktrace = '';
   let testResults = [];
   let totalPossibleWeight = 0;
   testCases.forEach((testCase) => (totalPossibleWeight += testCase.weight));
+
+  if (forbiddenRegexes.length > 0) {
+    const anyRegexMatch = forbiddenRegexes.some((regex) => new RegExp(regex).test(code));
+    if (anyRegexMatch) {
+      res.status(400).send({
+        msg: 'Koden din følger ikke reglene satt for oppgaven!',
+      });
+      return;
+    }
+  }
 
   const timeStart = process.hrtime();
 
