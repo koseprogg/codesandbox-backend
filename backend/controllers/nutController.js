@@ -14,7 +14,7 @@ const getTask = async (req) => {
   const foundTask = await TaskModel.findOne({
     day,
     parentCompetition: ObjectId(comp._id),
-  }).select('prependedCode appendedCode codeContext testCases _id');
+  }).select('prependedCode appendedCode codeContext forbiddenRegexes testCases _id');
   return foundTask;
 };
 
