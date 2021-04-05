@@ -148,7 +148,7 @@ const getTaskLeaderboard = async (req, res) => {
       $sort: {
         score: -1,
         hasCharCount: -1,
-        characterCount: 1,
+        codeCharacterCount: 1,
         executionTime: 1,
       },
     },
