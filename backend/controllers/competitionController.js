@@ -1,7 +1,11 @@
 /* eslint-disable no-return-assign */
 const { VM } = require('vm2');
+const Docker = require('dockerode');
+
+const docker = new Docker();
 
 const CompetitionModel = require('../models/competitionModel');
+const { LANGS } = require('../models/taskModel');
 const { getTask } = require('./nutController');
 const { normalizeString } = require('../utils/utils');
 const { saveSubmission } = require('./submissionController');
@@ -42,7 +46,13 @@ const runCodeForNut = async (req, res) => {
   const { code, sendSubmission } = req.body;
   const task = await getTask(req);
   const {
-    testCases, prependedCode, appendedCode, _id, forbiddenRegexes,
+    testCases,
+    prependedCode,
+    appendedCode,
+    _id,
+    forbiddenRegexes,
+    language,
+    fixture,
   } = task;
 
   let stacktrace = '';
@@ -62,44 +72,60 @@ const runCodeForNut = async (req, res) => {
 
   const timeStart = process.hrtime();
 
-  testResults = testCases.map((testCase) => {
-    try {
-      const vm = new VM({
-        timeout: 10000,
-      });
-      vm.run(prependedCode);
-      vm.run(code);
-      vm.run(appendedCode);
-      const testResult = vm.run(testCase.testCode);
+  if (language === LANGS.JAVASCRIPT) {
+    testResults = testCases.map((testCase) => {
+      try {
+        const vm = new VM({
+          timeout: 10000,
+        });
+        vm.run(prependedCode);
+        vm.run(code);
+        vm.run(appendedCode);
+        const testResult = vm.run(testCase.testCode);
 
-      // TODO FIXME
-      const correctAnswer = JSON.parse(testCase.correctAnswer);
+        // TODO FIXME
+        const correctAnswer = JSON.parse(testCase.correctAnswer);
 
-      // eslint-disable-next-line eqeqeq
-      if (testResult == correctAnswer) {
+        // eslint-disable-next-line eqeqeq
+        if (testResult == correctAnswer) {
+          return {
+            testDescription: testCase.testDescription,
+            achievedWeight: testCase.weight,
+            success: true,
+            yourOutput: JSON.stringify(testResult),
+          };
+        }
         return {
           testDescription: testCase.testDescription,
-          achievedWeight: testCase.weight,
-          success: true,
+          achievedWeight: 0,
+          success: false,
           yourOutput: JSON.stringify(testResult),
         };
+      } catch (e) {
+        stacktrace = e;
+        return {
+          testDescription: testCase.testDescription,
+          achievedWeight: 0,
+          success: false,
+          yourOutput: '',
+        };
       }
-      return {
-        testDescription: testCase.testDescription,
-        achievedWeight: 0,
-        success: false,
-        yourOutput: JSON.stringify(testResult),
-      };
-    } catch (e) {
-      stacktrace = e;
-      return {
-        testDescription: testCase.testDescription,
-        achievedWeight: 0,
-        success: false,
-        yourOutput: '',
-      };
-    }
-  });
+    });
+  } else {
+    docker
+      .run(
+        `codewars/runner-${language}`,
+        ['run', '-l', language, '-c', code, '-t', 'cw', '-f', fixture],
+        process.stdout,
+        {
+          NetworkDisabled: true,
+        },
+      )
+      .then(([output, container]) => {
+        console.log(output);
+        return container.remove();
+      });
+  }
   const timeElapsed = process.hrtime(timeStart);
   const elapsedTimeInMilis = timeElapsed[1] / 1000000;
 
@@ -112,8 +138,14 @@ const runCodeForNut = async (req, res) => {
   const characterCount = code.length;
 
   if (req.user && sendSubmission !== false) {
-    await saveSubmission(req.user, code, totalAchievedWeight,
-      elapsedTimeInMilis, characterCount, _id);
+    await saveSubmission(
+      req.user,
+      code,
+      totalAchievedWeight,
+      elapsedTimeInMilis,
+      characterCount,
+      _id,
+    );
   }
 
   res.status(200).send({

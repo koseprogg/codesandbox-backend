@@ -2,12 +2,23 @@ const mongoose = require('mongoose');
 
 const { Schema, model } = mongoose;
 
+const LANGS = {
+  JAVASCRIPT: 'javascript',
+  JAVA: 'java',
+};
+
 const TaskSchema = new Schema(
   {
     _id: mongoose.Schema.Types.ObjectId,
     day: Number,
     name: String,
     description: String,
+    languages: [
+      {
+        type: String,
+        enum: Object.keys(LANGS),
+      },
+    ],
     testCases: [
       {
         testCode: String,
@@ -16,6 +27,7 @@ const TaskSchema = new Schema(
         testDescription: String,
       },
     ],
+    fixture: String,
     prize: String,
     codeContext: [
       {
@@ -40,3 +52,4 @@ const TaskSchema = new Schema(
 const TaskModel = model('tasks', TaskSchema);
 
 module.exports = TaskModel;
+module.LANGS = LANGS;
