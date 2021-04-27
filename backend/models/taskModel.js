@@ -52,4 +52,4 @@ const TaskSchema = new Schema(
 const TaskModel = model('tasks', TaskSchema);
 
 module.exports = TaskModel;
-module.LANGS = LANGS;
+module.exports.LANGS = LANGS;

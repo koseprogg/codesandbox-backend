@@ -1,6 +1,7 @@
 /* eslint-disable no-return-assign */
 const { VM } = require('vm2');
 const Docker = require('dockerode');
+const streams = require('memory-streams');
 
 const docker = new Docker();
 
@@ -36,14 +37,14 @@ const getNutByCompetitionNameAndDay = (req, res) => {
     .populate({
       path: 'tasks',
       match: { day: parseInt(day, 10) },
-      select: 'name day description image prize',
+      select: 'name day description image prize languages',
     })
     .then((tasks) => res.json(tasks))
     .catch(() => res.status(400).send('Something went wrong.'));
 };
 
 const runCodeForNut = async (req, res) => {
-  const { code, sendSubmission } = req.body;
+  const { code, sendSubmission, language: submissionLang } = req.body;
   const task = await getTask(req);
   const {
     testCases,
@@ -60,6 +61,13 @@ const runCodeForNut = async (req, res) => {
   let totalPossibleWeight = 0;
   testCases.forEach((testCase) => (totalPossibleWeight += testCase.weight));
 
+  if (!Object.values(LANGS).includes(submissionLang)) {
+    res.status(400).send({
+      msg: 'Angitt språk er ikke støttet for denne oppgaven',
+    });
+    return;
+  }
+
   if (forbiddenRegexes.length > 0) {
     const anyRegexMatch = forbiddenRegexes.some((regex) => new RegExp(regex).test(code));
     if (anyRegexMatch) {
@@ -71,8 +79,7 @@ const runCodeForNut = async (req, res) => {
   }
 
   const timeStart = process.hrtime();
-
-  if (language === LANGS.JAVASCRIPT) {
+  if (submissionLang === LANGS.JAVASCRIPT) {
     testResults = testCases.map((testCase) => {
       try {
         const vm = new VM({
@@ -112,18 +119,33 @@ const runCodeForNut = async (req, res) => {
       }
     });
   } else {
-    docker
+    const dockerOut = new streams.WritableStream();
+    const dockerErr = new streams.WritableStream();
+
+    testResults[0] = await docker
       .run(
-        `codewars/runner-${language}`,
-        ['run', '-l', language, '-c', code, '-t', 'cw', '-f', fixture],
-        process.stdout,
+        `codewars/${submissionLang}-runner`,
+        ['run', '-l', submissionLang, '-c', code],
+        [dockerOut, dockerErr],
         {
           NetworkDisabled: true,
+          Remove: true,
+          Tty: false,
         },
       )
-      .then(([output, container]) => {
-        console.log(output);
-        return container.remove();
+      .then(([, container]) => {
+        container.remove();
+        stacktrace = dockerErr.toString();
+        return {
+          testDescription: 'test',
+          achievedWeight: 10,
+          success: false,
+          yourOutput: dockerOut.toString(),
+        };
+      })
+      .finally(() => {
+        dockerOut.end();
+        dockerErr.end();
       });
   }
   const timeElapsed = process.hrtime(timeStart);
