@@ -21,4 +21,9 @@ const ensureAuth = (req, res, next) => {
   else next();
 };
 
-module.exports = { jwtAuth, ensureAuth };
+const ensureAdmin = (req, res, next) => {
+  if (!req.user.isAdmin) res.status(403).send('User is not allowed to access this resource');
+  else next();
+};
+
+module.exports = { jwtAuth, ensureAuth, ensureAdmin };

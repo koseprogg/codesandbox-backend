@@ -16,7 +16,7 @@ const TaskSchema = new Schema(
     languages: [
       {
         type: String,
-        enum: Object.keys(LANGS),
+        enum: Object.values(LANGS),
       },
     ],
     testCases: [
@@ -27,14 +27,10 @@ const TaskSchema = new Schema(
         testDescription: String,
       },
     ],
+    initial: String,
     fixture: String,
+    totalScore: Number,
     prize: String,
-    codeContext: [
-      {
-        key: String,
-        value: String,
-      },
-    ],
     image: String,
     prependedCode: String,
     forbiddenRegexes: [String],

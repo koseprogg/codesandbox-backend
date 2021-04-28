@@ -9,6 +9,7 @@ const CompetitionModel = require('../models/competitionModel');
 const { LANGS } = require('../models/taskModel');
 const { getTask } = require('./nutController');
 const { normalizeString } = require('../utils/utils');
+const { parseCodewarriorRes } = require('../utils/codewarrior');
 const { saveSubmission } = require('./submissionController');
 
 const getAllCompetitions = (req, res) => {
@@ -18,15 +19,35 @@ const getAllCompetitions = (req, res) => {
     .catch(() => res.status(400).send('Something went wrong.'));
 };
 
-const getCompetitionByName = (req, res) => {
+const getCompetitionByName = async (req, res) => {
   const { name } = req.params;
 
-  CompetitionModel.findOne({ nameNormalized: normalizeString(name) })
+  const competition = await CompetitionModel.findOne({
+    nameNormalized: normalizeString(name),
+  })
     .select('name isActive image tasks')
     .populate('tasks', 'name day description image prize')
     .sort('-day')
-    .then((tasks) => res.json(tasks))
-    .catch(() => res.status(400).send('Something went wrong.'));
+    .populate('allowedUsers')
+    .exec();
+  if (!competition) {
+    res.status(404).send('Not found.');
+  }
+  const {
+    allowedUsers, tasks, name: compN, image, allowAny,
+  } = competition;
+  res.status(200).json({
+    canEdit: !!(
+      (req.user
+        && allowedUsers
+        && allowedUsers.filter((u) => u.username === req.user.username))
+      || (req.user && req.user.isAdmin)
+      || allowAny
+    ),
+    name: compN,
+    image,
+    tasks,
+  });
 };
 
 const getNutByCompetitionNameAndDay = (req, res) => {
@@ -52,14 +73,17 @@ const runCodeForNut = async (req, res) => {
     appendedCode,
     _id,
     forbiddenRegexes,
-    language,
     fixture,
+    totalScore,
   } = task;
 
   let stacktrace = '';
   let testResults = [];
   let totalPossibleWeight = 0;
+  let time;
   testCases.forEach((testCase) => (totalPossibleWeight += testCase.weight));
+
+  if (totalScore) totalPossibleWeight = totalScore;
 
   if (!Object.values(LANGS).includes(submissionLang)) {
     res.status(400).send({
@@ -78,8 +102,8 @@ const runCodeForNut = async (req, res) => {
     }
   }
 
-  const timeStart = process.hrtime();
   if (submissionLang === LANGS.JAVASCRIPT) {
+    const timeStart = process.hrtime();
     testResults = testCases.map((testCase) => {
       try {
         const vm = new VM({
@@ -109,7 +133,7 @@ const runCodeForNut = async (req, res) => {
           yourOutput: JSON.stringify(testResult),
         };
       } catch (e) {
-        stacktrace = e;
+        stacktrace = e.toString();
         return {
           testDescription: testCase.testDescription,
           achievedWeight: 0,
@@ -118,14 +142,27 @@ const runCodeForNut = async (req, res) => {
         };
       }
     });
+    time = process.hrtime(timeStart)[1] / 1000000;
   } else {
     const dockerOut = new streams.WritableStream();
     const dockerErr = new streams.WritableStream();
 
-    testResults[0] = await docker
+    testResults = await docker
       .run(
         `codewars/${submissionLang}-runner`,
-        ['run', '-l', submissionLang, '-c', code],
+        [
+          'run',
+          '-l',
+          submissionLang,
+          '-c',
+          code,
+          '-t',
+          'cw',
+          '-f',
+          fixture,
+          '-t',
+          '10',
+        ],
         [dockerOut, dockerErr],
         {
           NetworkDisabled: true,
@@ -136,24 +173,20 @@ const runCodeForNut = async (req, res) => {
       .then(([, container]) => {
         container.remove();
         stacktrace = dockerErr.toString();
-        return {
-          testDescription: 'test',
-          achievedWeight: 10,
-          success: false,
-          yourOutput: dockerOut.toString(),
-        };
+        const results = parseCodewarriorRes(dockerOut.toString());
+        return results;
       })
       .finally(() => {
         dockerOut.end();
         dockerErr.end();
       });
+
+    time = testResults.reduce((tot, r) => tot + (r.time || 0), 0);
   }
-  const timeElapsed = process.hrtime(timeStart);
-  const elapsedTimeInMilis = timeElapsed[1] / 1000000;
 
   let totalAchievedWeight = 0;
   testResults.forEach((testResult) => {
-    totalAchievedWeight += testResult.achievedWeight;
+    totalAchievedWeight += testResult.achievedWeight || 0;
   });
 
   const score = Math.floor((totalAchievedWeight / totalPossibleWeight) * 100);
@@ -164,7 +197,7 @@ const runCodeForNut = async (req, res) => {
       req.user,
       code,
       totalAchievedWeight,
-      elapsedTimeInMilis,
+      time,
       characterCount,
       _id,
     );
@@ -176,9 +209,9 @@ const runCodeForNut = async (req, res) => {
       possibleScore: totalPossibleWeight,
       achievedScore: totalAchievedWeight,
       characterCount,
-      elapsedTimeInMilis,
+      elapsedTimeInMilis: time,
     },
-    msg: stacktrace.toString(),
+    msg: stacktrace,
   });
 };
 
