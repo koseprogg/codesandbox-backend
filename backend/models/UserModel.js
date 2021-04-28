@@ -10,6 +10,7 @@ const UserSchema = new Schema(
     lastName: String,
     profilePicture: String,
     emailAddress: String,
+    isAdmin: Boolean,
   },
   {
     autoCreate: true,

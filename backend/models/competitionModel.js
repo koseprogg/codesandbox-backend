@@ -10,6 +10,9 @@ const CompetitionSchema = new Schema(
     image: String,
     isActive: Boolean,
     tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'tasks' }],
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
+    allowedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }],
+    allowAny: { type: Boolean, default: false },
   },
   {
     autoCreate: true,
