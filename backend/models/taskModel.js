@@ -39,6 +39,10 @@ const TaskSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'competitions',
     },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'users',
+    },
   },
   {
     autoCreate: true,

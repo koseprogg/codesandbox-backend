@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const CompetitionModel = require('../models/competitionModel.js');
 const TaskModel = require('../models/taskModel.js');
 const { normalizeString } = require('../utils/utils.js');
-const { ensureAdmin, ensureAuth } = require('../utils/auth.js');
+const { ensureAdmin, ensureAuth, canEdit } = require('../utils/auth.js');
 
 const router = express.Router();
 const { ObjectId } = mongoose.Types;
@@ -20,11 +20,12 @@ router.post('/competitions', ensureAdmin, async (req, res) => {
     competitionDetails.nameNormalized = normalizeString(
       competitionDetails.name,
     );
+    competitionDetails.createdBy = ObjectId(req.user._id);
     const competition = new CompetitionModel(competitionDetails);
     const created = await new CompetitionModel(competition).save();
     res.status(201).send(created);
   } else {
-    res.status(409).send({ message: 'Name already taken' });
+    res.status(409).send({ msg: 'Name already taken' });
   }
 });
 
@@ -37,7 +38,7 @@ router.post('/competitions/:name/', ensureAuth, async (req, res) => {
   );
 
   if (existingCompetition.length === 0) {
-    res.status(404).send('No parent competition by that name.');
+    res.status(404).send({ msg: 'No parent competition by that name.' });
   } else {
     if (
       existingCompetition.allowedUsers
@@ -48,7 +49,9 @@ router.post('/competitions/:name/', ensureAuth, async (req, res) => {
       && !existingCompetition.allowAny
       && !req.user.isAdmin
     ) {
-      res.status(403).send('User is not allowed to access this resource.');
+      res
+        .status(403)
+        .send({ msg: 'User is not allowed to access this resource.' });
       return;
     }
 
@@ -56,6 +59,7 @@ router.post('/competitions/:name/', ensureAuth, async (req, res) => {
 
     taskDetails._id = new ObjectId();
     taskDetails.parentCompetition = existingCompetitionId;
+    taskDetails.createdBy = ObjectId(req.user._id);
     const createdTask = await new TaskModel(taskDetails).save();
 
     await CompetitionModel.findByIdAndUpdate(
@@ -65,6 +69,60 @@ router.post('/competitions/:name/', ensureAuth, async (req, res) => {
     );
     res.status(201).send(createdTask);
   }
+});
+
+router.get('/competitions/:name/:taskname', ensureAuth, async (req, res) => {
+  const { taskname } = req.params;
+
+  const task = await TaskModel.findOne({ name: taskname });
+
+  if (!task) {
+    res.status(404);
+    return;
+  }
+  if (!canEdit(req.user, task)) {
+    res.status(403).send({ msg: 'user is not allowed to perform this action' });
+  }
+
+  res.json(task);
+});
+
+router.put('/competitions/:name/:taskname', ensureAuth, async (req, res) => {
+  const { taskname } = req.params;
+  const taskDetails = req.body;
+
+  const task = await TaskModel.findOne({ name: taskname });
+
+  if (!task) {
+    res.status(404);
+    return;
+  }
+  if (!canEdit(req.user, task)) {
+    res.status(403).send({ msg: 'user is not allowed to perform this action' });
+  }
+
+  await task.update(taskDetails);
+  res.status(200).send(task);
+});
+
+router.delete('/competitions/:name/:taskname', ensureAuth, async (req, res) => {
+  const { name, taskname } = req.params;
+
+  const task = await TaskModel.findOne({ name: taskname });
+  const comp = await CompetitionModel.findOne({ name });
+  if (!canEdit(req.user, task)) {
+    res.status(403).send({ msg: 'User is not allowed to perform this action' });
+    return;
+  }
+  if (!task) {
+    res.status(404).send({ msg: 'cound not find task' });
+    return;
+  }
+
+  await comp.tasks.pull({ _id: task._id });
+  await task.delete();
+
+  res.status(200).send({ msg: 'ok' });
 });
 
 const adminRouter = router;

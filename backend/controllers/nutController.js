@@ -7,12 +7,12 @@ const CompetitionModel = require('../models/competitionModel');
 const { ObjectId } = mongoose.Types;
 
 const getTask = async (req) => {
-  const { name, day } = req.params;
+  const { name, taskname } = req.params;
   const comp = await CompetitionModel.findOne({
     nameNormalized: normalizeString(name),
   });
   const foundTask = await TaskModel.findOne({
-    day,
+    name: taskname,
     parentCompetition: ObjectId(comp._id),
   });
   return foundTask;

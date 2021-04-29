@@ -9,6 +9,7 @@ const {
   getAllCompetitions,
   getCompetitionByName,
   getNutByCompetitionNameAndDay,
+  getNutByName,
   runCodeForNut,
 } = require('../controllers/competitionController');
 const { ensureLegalCode } = require('../utils/codeValidation');
@@ -29,19 +30,23 @@ router.get('/:name/day/:day', (req, res) => {
   getNutByCompetitionNameAndDay(req, res);
 });
 
-router.get('/:name/day/:day/submissions', ensureAuth, (req, res) => {
-  getTaskSubmissionsByUser(req, res);
-});
-
 router.get('/:name/leaderboard', ensureAuth, (req, res) => {
   getCompetitionLeaderboard(req, res);
 });
 
-router.get('/:name/day/:day/leaderboard', ensureAuth, (req, res) => {
+router.get('/:name/:taskname', (req, res) => {
+  getNutByName(req, res);
+});
+
+router.get('/:name/:taskname/submissions', ensureAuth, (req, res) => {
+  getTaskSubmissionsByUser(req, res);
+});
+
+router.get('/:name/:taskname/leaderboard', ensureAuth, (req, res) => {
   getTaskLeaderboard(req, res);
 });
 
-router.post('/:name/day/:day', ensureLegalCode, async (req, res) => {
+router.post('/:name/:taskname', ensureLegalCode, async (req, res) => {
   runCodeForNut(req, res);
 });
 

@@ -26,4 +26,16 @@ const ensureAdmin = (req, res, next) => {
   else next();
 };
 
-module.exports = { jwtAuth, ensureAuth, ensureAdmin };
+const canEdit = (user, document) => {
+  if (!user) return false;
+  if (user.isAdmin) return true;
+  if (document.createdBy && document.createdBy._id === user._id) return true;
+  return false;
+};
+
+module.exports = {
+  jwtAuth,
+  ensureAuth,
+  ensureAdmin,
+  canEdit,
+};
