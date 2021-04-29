@@ -9,6 +9,7 @@ const CompetitionModel = require('../models/competitionModel');
 const { LANGS } = require('../models/taskModel');
 const { getTask } = require('./nutController');
 const { normalizeString } = require('../utils/utils');
+const { canEdit } = require('../utils/auth');
 const { parseCodewarriorRes } = require('../utils/codewarrior');
 const { saveSubmission } = require('./submissionController');
 
@@ -41,7 +42,7 @@ const getCompetitionByName = async (req, res) => {
       (req.user
         && allowedUsers
         && allowedUsers.filter((u) => u.username === req.user.username))
-      || (req.user && req.user.isAdmin)
+      || canEdit(req.user, competition)
       || allowAny
     ),
     name: compN,
@@ -62,6 +63,33 @@ const getNutByCompetitionNameAndDay = (req, res) => {
     })
     .then((tasks) => res.json(tasks))
     .catch(() => res.status(400).send('Something went wrong.'));
+};
+
+const getNutByName = async (req, res) => {
+  const { name, taskname } = req.params;
+
+  const comp = await CompetitionModel.findOne({
+    nameNormalized: normalizeString(name),
+  })
+    .select('name tasks createdBy')
+    .populate({
+      path: 'tasks',
+      match: { name: taskname },
+      select: 'name day description image prize languages createdBy',
+    })
+    .lean();
+
+  const { name: compname, tasks } = comp;
+
+  const pTasks = tasks.map((task) => ({
+    ...task,
+    canEdit: canEdit(req.user, task),
+  }));
+
+  res.json({
+    name: compname,
+    tasks: pTasks,
+  });
 };
 
 const runCodeForNut = async (req, res) => {
@@ -219,5 +247,6 @@ module.exports = {
   getAllCompetitions,
   getCompetitionByName,
   getNutByCompetitionNameAndDay,
+  getNutByName,
   runCodeForNut,
 };

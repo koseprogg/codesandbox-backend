@@ -26,12 +26,12 @@ const saveSubmission = async (
 };
 
 const getTaskSubmissionsByUser = async (req, res) => {
-  const { name, day } = req.params;
+  const { name, taskname } = req.params;
   const { user } = req;
 
   const competition = await CompetitionModel.findOne({ name }).populate({
     path: 'tasks',
-    match: { day },
+    match: { name: taskname },
     select: '_id',
   });
 
@@ -114,11 +114,11 @@ const getCompetitionLeaderboard = async (req, res) => {
 };
 
 const getTaskLeaderboard = async (req, res) => {
-  const { name, day } = req.params;
+  const { name, taskname } = req.params;
 
   const competition = await CompetitionModel.findOne({ name }).populate({
     path: 'tasks',
-    match: { day },
+    match: { name: taskname },
     select: '_id',
   });
 
@@ -138,9 +138,7 @@ const getTaskLeaderboard = async (req, res) => {
       // Compat: Documents before codeCharacterCount and time was added won't sort correctly
       $addFields: {
         hasCharCount: {
-          $cond: [
-            { $gt: ['$codeCharacterCount', 0] }, true, false,
-          ],
+          $cond: [{ $gt: ['$codeCharacterCount', 0] }, true, false],
         },
       },
     },
