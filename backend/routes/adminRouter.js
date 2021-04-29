@@ -29,6 +29,10 @@ router.post('/competitions', ensureAdmin, async (req, res) => {
   }
 });
 
+const userIsAllowed = (user, allowedUsers) => allowedUsers
+  && user
+  && allowedUsers.filter((u) => u._id === user.id).length !== 0;
+
 router.post('/competitions/:name/', ensureAuth, async (req, res) => {
   const { name } = req.params;
   const taskDetails = req.body;
@@ -40,14 +44,10 @@ router.post('/competitions/:name/', ensureAuth, async (req, res) => {
   if (existingCompetition.length === 0) {
     res.status(404).send({ msg: 'No parent competition by that name.' });
   } else {
+    const comp = existingCompetition[0];
     if (
-      existingCompetition.allowedUsers
-      && existingCompetition.allowedUsers.length !== 0
-      && existingCompetition.allowedUsers.filter(
-        (user) => user.username === req.user.username,
-      ).length === 0
-      && !existingCompetition.allowAny
-      && !req.user.isAdmin
+      !canEdit(req.user, comp)
+      && !userIsAllowed(req.user, comp.allowedUsers)
     ) {
       res
         .status(403)
@@ -128,3 +128,4 @@ router.delete('/competitions/:name/:taskname', ensureAuth, async (req, res) => {
 const adminRouter = router;
 
 module.exports = adminRouter;
+module.exports.userIsAllowed = userIsAllowed;

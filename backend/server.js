@@ -129,7 +129,7 @@ app.get('/auth/callback', async (req, res) => {
       data: user,
     },
     process.env.SECRET_KEY,
-    { expiresIn: 3600 },
+    { expiresIn: '3 days' },
   );
 
   res.cookie('auth', token);

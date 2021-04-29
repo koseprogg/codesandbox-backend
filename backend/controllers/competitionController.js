@@ -12,6 +12,7 @@ const { normalizeString } = require('../utils/utils');
 const { canEdit } = require('../utils/auth');
 const { parseCodewarriorRes } = require('../utils/codewarrior');
 const { saveSubmission } = require('./submissionController');
+const { userIsAllowed } = require('../routes/adminRouter');
 
 const getAllCompetitions = (req, res) => {
   CompetitionModel.find({})
@@ -35,16 +36,13 @@ const getCompetitionByName = async (req, res) => {
     res.status(404).send('Not found.');
   }
   const {
-    allowedUsers, tasks, name: compN, image, allowAny,
+    tasks, name: compN, image, allowAny,
   } = competition;
   res.status(200).json({
-    canEdit: !!(
-      (req.user
-        && allowedUsers
-        && allowedUsers.filter((u) => u.username === req.user.username))
-      || canEdit(req.user, competition)
-      || allowAny
-    ),
+    canEdit:
+      canEdit(req.user, competition)
+      || userIsAllowed(req.user, competition)
+      || allowAny,
     name: compN,
     image,
     tasks,
