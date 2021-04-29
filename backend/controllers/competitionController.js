@@ -27,7 +27,7 @@ const getCompetitionByName = async (req, res) => {
   const competition = await CompetitionModel.findOne({
     nameNormalized: normalizeString(name),
   })
-    .select('name isActive image tasks')
+    .select('name isActive image tasks allowAny allowedUsers')
     .populate('tasks', 'name day description image prize')
     .sort('-day')
     .populate('allowedUsers')
@@ -36,13 +36,14 @@ const getCompetitionByName = async (req, res) => {
     res.status(404).send('Not found.');
   }
   const {
-    tasks, name: compN, image, allowAny,
+    tasks, name: compN, image, allowAny, allowedUsers,
   } = competition;
   res.status(200).json({
-    canEdit:
+    canEdit: !!(
       canEdit(req.user, competition)
-      || userIsAllowed(req.user, competition)
-      || allowAny,
+      || userIsAllowed(req.user, allowedUsers)
+      || allowAny
+    ),
     name: compN,
     image,
     tasks,

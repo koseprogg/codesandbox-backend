@@ -31,6 +31,7 @@ router.post('/competitions', ensureAdmin, async (req, res) => {
 
 const userIsAllowed = (user, allowedUsers) => allowedUsers
   && user
+  && allowedUsers
   && allowedUsers.filter((u) => u._id === user.id).length !== 0;
 
 router.post('/competitions/:name/', ensureAuth, async (req, res) => {
