@@ -42,11 +42,12 @@ const getCompetitionByName = async (req, res) => {
     canEdit: !!(
       canEdit(req.user, competition)
       || userIsAllowed(req.user, allowedUsers)
-      || allowAny
+      || (allowAny && req.user)
     ),
     name: compN,
     image,
     tasks,
+    allowAny,
   });
 };
 
