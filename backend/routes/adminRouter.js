@@ -49,6 +49,7 @@ router.post('/competitions/:name/', ensureAuth, async (req, res) => {
     if (
       !canEdit(req.user, comp)
       && !userIsAllowed(req.user, comp.allowedUsers)
+      && !comp.allowAny
     ) {
       res
         .status(403)
