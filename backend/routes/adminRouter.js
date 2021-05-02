@@ -38,9 +38,9 @@ router.post('/competitions/:name/', ensureAuth, async (req, res) => {
   const { name } = req.params;
   const taskDetails = req.body;
 
-  const existingCompetition = await CompetitionModel.find({ name }).populate(
-    'allowedUsers',
-  );
+  const existingCompetition = await CompetitionModel.find({ name })
+    .populate('allowedUsers')
+    .populate('createdBy');
 
   if (existingCompetition.length === 0) {
     res.status(404).send({ msg: 'No parent competition by that name.' });
@@ -76,7 +76,9 @@ router.post('/competitions/:name/', ensureAuth, async (req, res) => {
 router.get('/competitions/:name/:taskname', ensureAuth, async (req, res) => {
   const { taskname } = req.params;
 
-  const task = await TaskModel.findOne({ name: taskname });
+  const task = await TaskModel.findOne({ name: taskname }).populate(
+    'createdBy',
+  );
 
   if (!task) {
     res.status(404);
@@ -84,6 +86,7 @@ router.get('/competitions/:name/:taskname', ensureAuth, async (req, res) => {
   }
   if (!canEdit(req.user, task)) {
     res.status(403).send({ msg: 'user is not allowed to perform this action' });
+    return;
   }
 
   res.json(task);
@@ -93,7 +96,9 @@ router.put('/competitions/:name/:taskname', ensureAuth, async (req, res) => {
   const { taskname } = req.params;
   const taskDetails = req.body;
 
-  const task = await TaskModel.findOne({ name: taskname });
+  const task = await TaskModel.findOne({ name: taskname }).populate(
+    'createdBy',
+  );
 
   if (!task) {
     res.status(404);
@@ -110,7 +115,9 @@ router.put('/competitions/:name/:taskname', ensureAuth, async (req, res) => {
 router.delete('/competitions/:name/:taskname', ensureAuth, async (req, res) => {
   const { name, taskname } = req.params;
 
-  const task = await TaskModel.findOne({ name: taskname });
+  const task = await TaskModel.findOne({ name: taskname }).populate(
+    'createdBy',
+  );
   const comp = await CompetitionModel.findOne({ name });
   if (!canEdit(req.user, task)) {
     res.status(403).send({ msg: 'User is not allowed to perform this action' });
