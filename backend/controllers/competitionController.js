@@ -76,6 +76,10 @@ const getNutByName = async (req, res) => {
       path: 'tasks',
       match: { name: taskname },
       select: 'name day description image prize languages createdBy',
+      populate: {
+        path: 'createdBy',
+        model: 'users',
+      },
     })
     .lean();
 
